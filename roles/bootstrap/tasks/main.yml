@@ -1,0 +1,107 @@
+- name: create docker group
+  group:
+    name: docker
+    state: present
+- name: create service user for server
+  user:
+    name: "{{ media_server_user }}"
+    groups: docker
+#Install docker as well?
+- name: make sure docker service is started and enabled
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+- name: install supervisord
+  pip:
+    name: supervisor
+- name: install libselinux-python
+  dnf:
+    name: libselinux-python
+    state: latest
+- name: generate supervisord template file
+  template:
+    src: templates/supervisord.conf.j2
+    dest: /etc/supervisord.conf
+- name: create log file directory
+  file:
+    path: /var/log/supervisord/
+    owner: root
+    state: directory
+- name: start supervisord
+  tags:
+    - supervisord
+  command: supervisord
+- name: create home-assistant persistent folder
+  tags:
+    - home-assistant
+  file:
+    path: "{{ home_assistant_folder }}"
+    state: directory
+    owner: "{{ media_server_user }}"
+    group: "{{ media_server_user }}"
+- name: restart supervisorctl
+  tags: 
+    - home-assistant
+  supervisorctl:
+    name: home-assistant
+    state: restarted
+#reverse proxy
+- name: install nginx
+  tags:
+    - reverse-proxy
+  dnf:
+    name: nginx
+    state: latest
+- name: enable nginx
+  tags:
+    - reverse-proxy
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+- name: nginx config file
+  tags:
+    - reverse-proxy
+  template:
+    src: templates/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+- name: enable selinux reverse proxy
+  tags:
+    - reverse-proxy
+  command: "setsebool -P httpd_can_network_connect 1"
+- name: restart nginx
+  tags:
+    - reverse-proxy
+  systemd:
+    name: nginx
+    state: restarted
+- name: firewall http port
+  tags:
+    - reverse-proxy
+  command: firewall-cmd --add-port=80/tcp --permanent
+- name: firewall https port
+  tags:
+    - reverse-proxy
+  command: firewall-cmd --add-port=443/tcp --permanent
+- name: firewall ssh port
+  tags:
+    - reverse-proxy
+  command: firewall-cmd --add-port=22/tcp --permanent
+- name: reload firewalld
+  tags:
+    - reverse-proxy
+  command: firewall-cmd --reload
+#Set up port forwarding and duckdns manually
+#After that set up certbot for letsencrypt
+- name: install certbot-nginx
+  tags:
+    - lets-encrypt
+  dnf:
+    name: certbot-nginx
+    state: latest
+#Has interactive part. needs to be run manually
+#- name: configure certbot
+#  tags:
+#    - lets-encrypt
+#  command: "certbot --nginx -m {{ email }}"

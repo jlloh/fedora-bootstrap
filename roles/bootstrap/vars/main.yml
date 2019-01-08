@@ -1,0 +1,5 @@
+media_server_user: mediaserver
+home_assistant_folder: /common/home-assistant
+home_assistant_port: 8123
+media_server_domain_name: lohmediaserver.duckdns.org
+email: jia.long.loh@gmail.com

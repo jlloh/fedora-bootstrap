@@ -1,0 +1,5 @@
+---
+- name: initial bootstrap
+  hosts: local
+  roles:
+    - bootstrap
