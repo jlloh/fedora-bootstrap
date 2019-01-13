@@ -1,0 +1,11 @@
+[Unit]
+Description=Supervisord Init script
+
+[Service]
+WorkingDirectory=/root
+Type=forking
+ExecStart=/usr/bin/supervisord
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

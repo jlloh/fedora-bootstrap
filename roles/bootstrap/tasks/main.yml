@@ -28,10 +28,20 @@
     path: /var/log/supervisord/
     owner: root
     state: directory
+- name: create supervisord init scripts
+  tags:
+    - supervisord
+  template:
+    src: templates/supervisord.service.j2
+    dest: /usr/lib/systemd/system/supervisord.service
 - name: start supervisord
   tags:
     - supervisord
-  command: supervisord
+  systemd:
+    name: supervisord
+    state: started
+    enabled: yes
+  #command: supervisord
 - name: create home-assistant persistent folder
   tags:
     - home-assistant
@@ -105,3 +115,17 @@
 #  tags:
 #    - lets-encrypt
 #  command: "certbot --nginx -m {{ email }}"
+#  SSH parts as well. Template ssh file and enable service?
+- name: sshd config file
+  tags:
+    - ssh
+  template:
+    src: templates/sshd_config.j2
+    dest: /etc/ssh/sshd_config
+- name: enable sshd
+  tags: 
+    - ssh
+  systemd:
+    name: sshd
+    state: started
+    enabled: yes
