@@ -20,6 +20,8 @@
     name: libselinux-python
     state: latest
 - name: generate supervisord template file
+  tags:
+    - plex
   template:
     src: templates/supervisord.conf.j2
     dest: /etc/supervisord.conf
@@ -129,3 +131,29 @@
     name: sshd
     state: started
     enabled: yes
+# Plex stuff. Create folders, supervisord stuff
+- name: create plex root folder
+  tags:
+    - plex
+  file:
+    path: "{{ plex_folder }}"
+    state: directory
+    owner: "{{ media_server_user }}"
+    group: "{{ media_server_user }}"
+- name: create plex transcode folder
+  tags:
+    - plex
+  file:
+    path: "{{ plex_transcode_folder }}"
+    state: directory
+    owner: "{{ media_server_user }}"
+    group: "{{ media_server_user }}"
+- name: create plex config folder
+  tags:
+    - plex
+  file:
+    path: "{{ plex_config_folder }}"
+    state: directory
+    owner: "{{ media_server_user }}"
+    group: "{{ media_server_user }}"
+
