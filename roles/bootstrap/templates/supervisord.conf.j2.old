@@ -21,10 +21,12 @@ serverurl=unix:///tmp/supervisor.sock ; use a unix:// URL for a unix socket
 
 [program:home-assistant]
 user={{ media_server_user }}
-directory={{ home_assistant_folder }}
-command=/usr/local/bin/docker-compose up
+command=docker run  -v {{ home_assistant_folder }}:/config -v /etc/localtime:/etc/localtime:ro --net=host homeassistant/home-assistant
 
 [program:plexmediaserver]
 user={{ media_server_user }}
 command=docker run --network=host -e TZ="{{ plex_timezone }}" -e PLEX_CLAIM="{{ plex_claim_token }}" -v {{ plex_config_folder }}:/config -v {{ plex_transcode_folder }}:/transcode -v {{ plex_uhd_movies_src }}:{{ plex_uhd_movies_dst }} -v {{ plex_hd_movies_src }}:{{ plex_hd_movies_dst }}  plexinc/pms-docker
 
+[program:appdaemon]
+user={{ media_server_user }}
+command=docker run --rm -p 5050:5050 -e HA_URL="https://{{ media_server_domain_name }}" -e TOKEN="{{ appdaemon_token }}" -e DASH_URL="http://$HOSTNAME:5050" -v {{ appdaemon_config_folder }}:/conf acockburn/appdaemon:latest
