@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  homeassistant:
+    image: homeassistant/home-assistant
+    restart: always
+    ports:
+      - "8123:8123"
+    volumes:
+      - {{ home_assistant_folder }}:/config
+      - /etc/localtime:/etc/localtime:ro
+    network_mode: host
+  appdaemon:
+    image: acockburn/appdaemon:latest
+    restart: always
+    ports:
+      - "5050:5050"
+    volumes:
+      - {{ appdaemon_config_folder }}:/conf
+    environment:
+      - HA_URL="http://localhost:8123"
+      - HA_KEY="{{ appdaemon_token }}"
+    network_mode: host
