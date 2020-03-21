@@ -12,6 +12,8 @@ plex_uhd_movies_dst: "/data/movies_uhd"
 plex_hd_movies_src: "/mnt/movies_hd"
 plex_hd_movies_dst: "/data/movies_hd"
 plex_timezone: Asia/Singapore
+plex_shows_src: "/mnt/shows"
+plex_shows_dst: "/data/shows"
 plex_claim_token: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           32383336386432643231323761393064616331323933373439323964626536316663643665656631

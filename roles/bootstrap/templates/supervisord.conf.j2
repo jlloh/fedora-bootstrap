@@ -26,5 +26,5 @@ command=/usr/local/bin/docker-compose up
 
 [program:plexmediaserver]
 user={{ media_server_user }}
-command=docker run --network=host -e TZ="{{ plex_timezone }}" -e PLEX_CLAIM="{{ plex_claim_token }}" -v {{ plex_config_folder }}:/config -v {{ plex_transcode_folder }}:/transcode -v {{ plex_uhd_movies_src }}:{{ plex_uhd_movies_dst }} -v {{ plex_hd_movies_src }}:{{ plex_hd_movies_dst }}  plexinc/pms-docker
+command=docker run --network=host -e TZ="{{ plex_timezone }}" -e PLEX_CLAIM="{{ plex_claim_token }}" -v {{ plex_config_folder }}:/config -v {{ plex_transcode_folder }}:/transcode -v {{ plex_uhd_movies_src }}:{{ plex_uhd_movies_dst }} -v {{ plex_hd_movies_src }}:{{ plex_hd_movies_dst }}  -v {{ plex_shows_src }}:{{ plex_shows_dst }}  plexinc/pms-docker
 
